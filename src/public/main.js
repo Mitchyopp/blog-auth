@@ -34,6 +34,19 @@ function setAuthState(token, user) {
     userSection.classList.add('hidden');
     currentUserSpan.textContent = '';
   }
-
   loadPosts();
+}
+
+async function apiFetch(path, options = {}) {
+  const headers = options.headers || {};
+  headers['Content-Type'] = 'application/json';
+  if (authToken) {
+    headers['Authorization'] = `Bearer ${authToken}`;
+  }
+  const res = await fetch(API_BASE + path, { ...options, headers });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.message || `Request failed: ${res.status}`);
+  }
+  return data;
 }
