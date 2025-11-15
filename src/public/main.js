@@ -50,3 +50,41 @@ async function apiFetch(path, options = {}) {
   }
   return data;
 }
+
+registerForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  authMessage.textContent = '';
+  const username = document.getElementById('reg-username').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const password = document.getElementById('reg-password').value;
+  try {
+    await apiFetch('/api/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ username, email, password }),
+    });
+    authMessage.textContent = 'Registered! please log in.';
+  } catch (err) {
+    authMessage.textContent = err.message;
+  }
+});
+
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  authMessage.textContent = '';
+
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  try {
+    const data = await apiFetch('/api/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    });
+    setAuthState(data.token, data.user);
+  } catch (err) {
+    authMessage.textContent = err.message;
+  }
+});
+
+logoutBtn.addEventListener('click', () => {
+  setAuthState(null, null);
+});
