@@ -40,3 +40,22 @@ router.get('/:id', async (req, res) => {
     res.status(500).json({ message: 'There was a server error.. :(' });
   }
 });
+
+router.post('/', auth, async (req, res) => {
+  try {
+    const { title, content, categoryId } = req.body;
+    if (!title || !content || !categoryId) {
+      return res.status(400).json({ message: 'Missing fields..' });
+    }
+    const post = await Post.create({
+      title,
+      content,
+      categoryId,
+      userId: req.user.id,
+    });
+    res.status(201).json(post);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'There was a server error.. :(' });
+  }
+});
