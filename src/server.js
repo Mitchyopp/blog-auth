@@ -5,10 +5,12 @@ const { sequelize } = require('./models');
 const app = express();
 const PORT = process.env.PORT || 3001;
 const authRoute = require('./routes/auth.js');
+const categoryRoute = require('./routes/categories.js');
 const authMiddleware = require('./middleware/auth.js');
 
 app.use(express.json());
 app.use('/api/auth', authRoute);
+app.use('/api/categories', categoryRoute);
 
 app.get('/api/me', authMiddleware, (req, res) => {
   res.json({ user: req.user });
