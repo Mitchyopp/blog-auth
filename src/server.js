@@ -4,8 +4,10 @@ const { sequelize } = require('./models');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const authRoute = require('./routes/auth.js');
 
 app.use(express.json());
+app.use('/api/auth', authRoute);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
