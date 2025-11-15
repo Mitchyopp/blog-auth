@@ -24,3 +24,19 @@ router.get('/', async (req, res) => {
     res.status(500).json({ message: 'There was a server error.. :(' });
   }
 });
+
+router.get('/:id', async (req, res) => {
+  try {
+    const post = await Post.findByPk(req.params.id, {
+      include: [
+        { model: User, attributes: ['id', 'username'] },
+        { model: Category, attributes: ['id', 'name'] },
+      ],
+    });
+    if (!post) return res.status(404).json({ message: 'This post was not found..' });
+    res.json(post);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'There was a server error.. :(' });
+  }
+});
