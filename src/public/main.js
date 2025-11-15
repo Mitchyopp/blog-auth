@@ -125,3 +125,41 @@ async function loadPosts() {
     postsSection.textContent = 'Failed to load posts: ' + err.message;
   }
 }
+
+function renderPosts(posts) {
+  if (!posts.length) {
+    postsSection.textContent = 'There are no posts here yet.. how about you make one?';
+    return;
+  }
+  postsSection.innerHTML = '';
+  for (const post of posts) {
+    const div = document.createElement('div');
+    div.className = 'post';
+    const isOwner = currentUser && post.userId === currentUser.id;
+    div.innerHTML = `
+      <h3>${post.title}</h3>
+      <div class="post-meta">
+        By ${post.User ? post.User.username : 'Unknown'}
+        ${post.Category ? ` | Category: ${post.Category.name}` : ''}
+      </div>
+      <p>${post.content}</p>
+      ${isOwner ? `
+        <button class="delete-btn" data-id="${post.id}">Delete</button>
+      ` : ''}
+    `;
+    postsSection.appendChild(div);
+  }
+
+  document.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-id');
+      if (!confirm('Delete this post?')) return;
+      try {
+        await apiFetch(`/api/posts/${id}`, { method: 'DELETE' });
+        loadPosts();
+      } catch (err) {
+        alert('Failed to delete: ' + err.message);
+      }
+    });
+  });
+}
