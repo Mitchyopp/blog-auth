@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const { sequelize } = require('./models');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -13,6 +14,8 @@ app.use(express.json());
 app.use('/api/auth', authRoute);
 app.use('/api/categories', categoryRoute);
 app.use('/api/posts', postRoute);
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/api/me', authMiddleware, (req, res) => {
   res.json({ user: req.user });
