@@ -14,6 +14,9 @@ module.exports = function auth(req, res, next) {
     next();
   } catch (err) {
     console.error(err);
+    if (err.name === 'TokenExpiredError') {
+      return res.status(401).json({ message: 'Token expired, please log in again' });
+    }
     return res.status(401).json({ messaeg: 'Invalid token.' });
   }
 };
