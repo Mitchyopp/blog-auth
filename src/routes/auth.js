@@ -36,5 +36,28 @@ router.post('/register', async (req, res) => {
   }
 })
 
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Please fill out all the fields..' });
+    }
+
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid credentials, please try again :(' });
+    }
+
+    const valid = await bcrypt.compare(password, user.passwordHash);
+    if (!valid) {
+      return res.status(400).json({ message: 'Invalid credentials, please try again :(' });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'There was a server error.. sorry!' });
+  }
+})
+
 
 module.exports = router;
