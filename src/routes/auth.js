@@ -9,7 +9,14 @@ router.post('/register', async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    //
+    if (!username || !email || !password) {
+      return res.status(400).json({ message: 'Please fill out all the fields..' });
+    }
+
+    const exists = await User.findOne({ where: { email } });
+    if (exists) {
+      return res.status(400).json({ message: 'Your email is already registered, please sign in.' });
+    }
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'There was a server error.. sorry!' });
