@@ -163,3 +163,32 @@ function renderPosts(posts) {
     });
   });
 }
+
+postForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (!authToken) {
+    alert('Please log in to create a post!');
+    return;
+  }
+  const title = document.getElementById('post-title').value.trim();
+  const content = document.getElementById('post-content').value.trim();
+  const categoryId = postCategorySelect.value;
+  try {
+    await apiFetch('/api/posts', {
+      method: 'POST',
+      body: JSON.stringify({ title, content, categoryId }),
+    });
+    postForm.reset();
+    loadPosts();
+  } catch (err) {
+    alert('Failed to create post: ' + err.message);
+  }
+});
+
+if (authToken && currentUser) {
+  setAuthState(authToken, currentUser);
+} else {
+  setAuthState(null, null);
+}
+
+loadCategories();
