@@ -88,3 +88,40 @@ loginForm.addEventListener('submit', async (e) => {
 logoutBtn.addEventListener('click', () => {
   setAuthState(null, null);
 });
+
+async function loadCategories() {
+  try {
+    const categories = await apiFetch('/api/categories');
+    postCategorySelect.innerHTML = '<option value="">Select category</option>';
+    filterCategorySelect.innerHTML = '<option value="">All</option>';
+    for (const c of categories) {
+      const opt1 = document.createElement('option');
+      opt1.value = c.id;
+      opt1.textContent = c.name;
+      postCategorySelect.appendChild(opt1);
+
+      const opt2 = document.createElement('option');
+      opt2.value = c.name;
+      opt2.textContent = c.name;
+      filterCategorySelect.appendChild(opt2);
+    }
+  } catch (err) {
+    console.error('Categories failed to load..', err);
+  }
+}
+
+filterCategorySelect.addEventListener('change', () => {
+  loadPosts();
+});
+
+async function loadPosts() {
+  postsSection.innerHTML = 'Loading posts...';
+  const categoryName = filterCategorySelect.value;
+  const query = categoryName ? `?category=${encodeURIComponent(categoryName)}` : '';
+  try {
+    const posts = await apiFetch('/api/posts' + query);
+    renderPosts(posts);
+  } catch (err) {
+    postsSection.textContent = 'Failed to load posts: ' + err.message;
+  }
+}
