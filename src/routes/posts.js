@@ -79,3 +79,20 @@ router.put('/:id', auth, async (req, res) => {
     res.status(500).json({ message: 'There was a server error.. :(' });
   }
 });
+
+router.delete('/:id', auth, async (req, res) => {
+  try {
+    const post = await Post.findByPk(req.params.id);
+    if (!post) return res.status(404).json({ message: 'This post was not found..' });
+    if (post.userId !== req.user.id) {
+      return res.status(403).json({ message: 'You do not own this post!' });
+    }
+    await post.destroy();
+    res.json({ message: 'Post deleted' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'There was a server error.. :(' });
+  }
+});
+
+module.exports = router;
