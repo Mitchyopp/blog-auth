@@ -7,6 +7,10 @@ const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
 
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
 async function start() {
   try {
     await sequelize.authenticate();
