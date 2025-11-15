@@ -7,4 +7,13 @@ module.exports = function auth(req, res, next) {
   if (type !== 'Bearer' || !token) {
     return res.status(401).json({ message: 'Access denied!!' });
   }
-}
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    console.error(err);
+    return res.status(401).json({ messaeg: 'Invalid token.' });
+  }
+};
